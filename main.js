@@ -48,8 +48,14 @@ module.exports = function (data) {
             eventName: function () {
                 return self.configuration.onionRedisSchema + '.proxy.add';
             },
+            statusName: function () {
+                return self.configuration.onionRedisSchema + '.proxy.add.status';
+            },
             publish: function (value) {
                 self.publisher.publish(self.proxy.add.eventName(), JSON.stringify(value));
+            },
+            publishStatus: function (value) {
+                self.publisher.publish(self.proxy.add.statusName(), JSON.stringify(value));
             },
             subscribe: function (callback) {
                 self.subscriber.on('message', function (message) {
@@ -60,10 +66,16 @@ module.exports = function (data) {
         },
         list: {
             eventName: function () {
-                return self.configuration.onionRedisSchema + '.proxy.list'
+                return self.configuration.onionRedisSchema + '.proxy.list';
+            },
+            statusName: function () {
+                return self.configuration.onionRedisSchema + '.proxy.list.status';
             },
             publish: function (value) {
                 self.publisher.publish(self.proxy.list.eventName(), JSON.stringify(value));
+            },
+            publishStatus: function (value) {
+                self.publisher.publish(self.proxy.list.statusName(), JSON.stringify(value));
             },
             subscribe: function (callback) {
                 self.subscriber.on(self.proxy.list.eventName(), function (message) {
@@ -75,7 +87,12 @@ module.exports = function (data) {
     };
     self._filterEvent = function (message, eventName, callback) {
         if (message.channel == eventName) {
-            callback(JSON.parse(message.message));
+            try {
+                var response = JSON.parse(message.message);
+                callback(undefined, response);
+            } catch (error) {
+                callback(error);
+            }
         }
     };
     return self;
