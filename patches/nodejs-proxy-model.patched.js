@@ -11,7 +11,8 @@ patch.append(proxyModel, 'entities', {
             enum: [
                 1, // HTTPProxy
                 2, // HTTPSProxy
-                3  // SOCKS5Proxy
+                3, // SOCKS4Proxy
+                4  // SOCKS5Proxy
             ]
         }
     })
