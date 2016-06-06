@@ -1,3 +1,4 @@
+var q = require('q');
 var configuration = require('./configuration');
 var onionRedisClient = require('nodejs-onion-redis-client');
 module.exports = function (data) {
@@ -7,21 +8,37 @@ module.exports = function (data) {
     }
     self.connect = function (callback) {
         function _connect() {
-            self.publisher = new onionRedisClient(self.configuration.torProxyUri, self.configuration.onionRedisUri);
-            self.publisher.connect(function (error) {
-                if (undefined != error) {
-                    callback(error);
-                    return;
-                }
+            var connectPromises = [];
+            // Publisher connect promise
+            connectPromises.push(q.Promise(function (resolve, reject) {
+                self.publisher = new onionRedisClient(self.configuration.torProxyUri, self.configuration.onionRedisUri);
+                self.publisher.connect(function (error) {
+                    if (undefined != error) {
+                        reject(error);
+                        return;
+                    }
+                    resolve();
+                });
+            }));
+            // Subscriber connect promise
+            connectPromises.push(q.Promise(function (resolve, reject) {
                 self.subscriber = new onionRedisClient(self.configuration.torProxyUri, self.configuration.onionRedisUri);
                 self.subscriber.connect(function (error) {
                     if (undefined != error) {
-                        callback(error);
+                        reject(error);
                         return;
                     }
-                    callback();
+                    resolve();
                 });
-            });
+            }));
+            q.all(connectPromises)
+                .then(function () {
+                    callback();
+                })
+                .catch(function (error) {
+                    callback(error)
+                })
+                .done();
         }
 
         if (undefined == self.configuration) {
