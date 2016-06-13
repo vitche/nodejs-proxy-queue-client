@@ -11,7 +11,7 @@ module.exports = function (data) {
             var connectPromises = [];
             // Publisher connect promise
             connectPromises.push(q.Promise(function (resolve, reject) {
-                self.publisher = new onionRedisClient(self.configuration.torProxyUri, self.configuration.onionRedisUri);
+                self.publisher = new onionRedisClient(self.configuration.onionRedisUri, self.configuration.torProxyUri);
                 self.publisher.connect(function (error) {
                     if (undefined != error) {
                         reject(error);
@@ -22,7 +22,7 @@ module.exports = function (data) {
             }));
             // Subscriber connect promise
             connectPromises.push(q.Promise(function (resolve, reject) {
-                self.subscriber = new onionRedisClient(self.configuration.torProxyUri, self.configuration.onionRedisUri);
+                self.subscriber = new onionRedisClient(self.configuration.onionRedisUri, self.configuration.torProxyUri);
                 self.subscriber.connect(function (error) {
                     if (undefined != error) {
                         reject(error);
