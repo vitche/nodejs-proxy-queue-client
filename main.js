@@ -60,47 +60,27 @@ module.exports = function (data) {
         self.publisher.disconnect();
         self.subscriber.disconnect();
     };
-    self.proxy = {
-        add: {
-            eventName: function () {
-                return self.configuration.onionRedisSchema + '.proxy.add';
-            },
-            statusName: function () {
-                return self.configuration.onionRedisSchema + '.proxy.add.status';
-            },
+    self._buildOperationDefinition = function (entityName, operationName) {
+        return {
             publish: function (value) {
-                self.publisher.publish(self.proxy.add.eventName(), JSON.stringify(value));
+                self.publisher.publish(self[entityName][operationName]._eventName(), JSON.stringify(value));
             },
             publishStatus: function (value) {
-                self.publisher.publish(self.proxy.add.statusName(), JSON.stringify(value));
+                self.publisher.publish(self[entityName][operationName]._statusName(), JSON.stringify(value));
             },
             subscribe: function (callback) {
                 self.subscriber.on('message', function (message) {
-                    self._filterEvent(message, self.proxy.add.eventName(), callback);
+                    self._filterEvent(message, self[entityName][operationName]._eventName(), callback);
                 });
-                self.subscriber.subscribe(self.proxy.add.eventName());
+                self.subscriber.subscribe(self[entityName][operationName]._eventName());
+            },
+            _eventName: function () {
+                return self.configuration.onionRedisSchema + '.' + entityName + '.' + operationName;
+            },
+            _statusName: function () {
+                return self.configuration.onionRedisSchema + '.' + entityName + '.' + operationName + '.status';
             }
-        },
-        list: {
-            eventName: function () {
-                return self.configuration.onionRedisSchema + '.proxy.list';
-            },
-            statusName: function () {
-                return self.configuration.onionRedisSchema + '.proxy.list.status';
-            },
-            publish: function (value) {
-                self.publisher.publish(self.proxy.list.eventName(), JSON.stringify(value));
-            },
-            publishStatus: function (value) {
-                self.publisher.publish(self.proxy.list.statusName(), JSON.stringify(value));
-            },
-            subscribe: function (callback) {
-                self.subscriber.on(self.proxy.list.eventName(), function (message) {
-                    self._filterEvent(message, self.proxy.list.eventName(), callback);
-                });
-                self.subscriber.subscribe(self.proxy.list.eventName());
-            }
-        }
+        };
     };
     self._filterEvent = function (message, eventName, callback) {
         if (message.channel == eventName) {
@@ -111,6 +91,10 @@ module.exports = function (data) {
                 callback(error);
             }
         }
+    };
+    self.proxy = {
+        add: self._buildOperationDefinition("proxy", "add"),
+        list: self._buildOperationDefinition("proxy", "list")
     };
     return self;
 };
