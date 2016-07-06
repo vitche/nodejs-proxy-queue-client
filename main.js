@@ -74,6 +74,12 @@ module.exports = function (data) {
                 });
                 self.subscriber.subscribe(self[entityName][operationName]._eventName());
             },
+            subscribeStatus: function (callback) {
+                self.subscriber.on('message', function (message) {
+                    self._filterEvent(message, self[entityName][operationName]._statusName(), callback);
+                });
+                self.subscriber.subscribe(self[entityName][operationName]._statusName());
+            },
             _eventName: function () {
                 return self.configuration.onionRedisSchema + '.' + entityName + '.' + operationName;
             },
