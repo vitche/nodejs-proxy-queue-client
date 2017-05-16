@@ -1,16 +1,12 @@
 {
-    "name": "nodejs-proxy-queue-client",
-    "version": "0.0.2",
-    "private": true,
-    "main": "main.js",
-    "dependencies": {
-        "mongoose": "4.4.17",
-        "nodejs-cluster-uri": "git+https://github.com/vitche/nodejs-cluster-uri.git",
-        "nodejs-onion-redis-client": "git+https://github.com/vitche/nodejs-onion-redis-client.git",
-        "nodejs-patch": "git+https://github.com/vitche/nodejs-patch.git",
-        "nodejs-proxy-model": "git+https://github.com/ToruHyuga/nodejs-proxy-model.git",
-        "nodeunit": "0.9.1",
-        "request": "2.72.0",
-        "q": "~1.4.1"
-    }
+  "name": "nodejs-proxy-queue-client",
+  "version": "0.0.3",
+  "private": true,
+  "main": "main.js",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "nodejs-onion-redis-client": "git+https://github.com/vitche/nodejs-onion-redis-client.git",
+    "nodeunit": "0.9.1",
+    "q": "~1.4.1"
+  }
 }
